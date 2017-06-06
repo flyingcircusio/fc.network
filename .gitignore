@@ -1,0 +1,11 @@
+syntax: glob
+
+bin/
+*.egg-info/
+include/
+lib/
+lib64
+__pycache__/
+*.py[co]
+.*.sw?
+pyvenv.cfg

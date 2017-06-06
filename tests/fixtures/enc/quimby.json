@@ -1,0 +1,89 @@
+{
+  "parameters": {
+    "reverses": {
+      "172.20.2.38": "ns.dev",
+      "2a02:238:f030:1c2::53": "ns.dev"
+    },
+    "network": [
+      {
+        "port": "board-1",
+        "mac": "b8:ac:6f:15:dd:08",
+        "vlans": {
+          "mgm": {
+            "bridged": false,
+            "tagged": true,
+            "metric": 2000,
+            "mode": "static",
+            "mtu": 1500,
+            "networks": {
+              "2a02:238:f030:1c1::/64": [ "2a02:238:f030:1c1::1075" ],
+              "172.20.1.0/24": [ "172.20.1.90" ]
+            },
+            "routes": [
+              "default via 2a02:238:f030:1c1::1",
+              "default via 172.20.1.1"
+            ]
+          },
+          "ipmi": {
+            "bridged": false,
+            "tagged": true,
+            "metric": 2000,
+            "mode": "static",
+            "mtu": 1500,
+            "networks": {
+              "2a02:238:f030:1c1::/64": [ "2a02:238:f030:1c1::37" ],
+              "172.20.1.0/24": [ "172.20.1.91" ]
+            },
+            "routes": [
+              "default via 2a02:238:f030:1c1::1",
+              "default via 172.20.1.1"
+            ]
+
+          },
+          "fe": {
+            "bridged": true,
+            "tagged": true,
+            "metric": 500,
+            "mode": "static",
+            "mtu": 1500,
+            "networks": {
+              "172.20.2.0/25": [ "172.20.2.38" ],
+              "2a02:238:f030:1c2::/64": [ "2a02:238:f030:1c2::106d", "2a02:238:f030:1c2::53" ]
+            },
+            "routes": [ "default via 172.20.2.1", "default via 2a02:238:f030:1c2::1" ]
+          },
+          "srv": {
+            "bridged": true,
+            "tagged": true,
+            "metric": 1100,
+            "mode": "static",
+            "mtu": 1500,
+            "networks": {
+              "2a02:238:f030:1c3::/64": [ "2a02:238:f030:1c3::1080" ],
+              "172.20.3.0/24": [ "172.20.3.54" ],
+              "172.30.3.0/24": []
+            },
+            "routes": [ "default via 2a02:238:f030:1c3::1", "default via 172.20.3.1", "default via 172.30.3.1" ]
+          }
+        }
+      },
+      {
+        "port": "board-2",
+        "mac": "b8:ac:6f:15:dd:0e",
+        "vlans": {
+          "sto": {
+            "bridged": false,
+            "tagged": true,
+            "metric": 1000,
+            "mode": "static",
+            "mtu": 9000,
+            "networks": {
+              "2a02:238:f030:1c4::/64": [ "2a02:238:f030:1c4::1075" ],
+              "172.20.4.0/24": [ "172.20.4.53" ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

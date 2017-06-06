@@ -1,0 +1,10 @@
+# Managed by configure-network. Don't edit.
+
+# === Port "mb1" (00:11:22:33:44:55) ===
+
+# === VLAN "srv" ===
+config_ethsrv="null"
+bridge_brsrv="ethsrv"
+config_brsrv="dhcp"
+metric_brsrv=1100
+mtu_ethsrv=1500

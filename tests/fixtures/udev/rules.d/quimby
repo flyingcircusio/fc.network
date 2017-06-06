@@ -1,0 +1,5 @@
+# Managed by configure-network. Don't edit.
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:08", ATTR{type}=="1", KERNEL=="eth*", NAME="ethmgm"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:0c", ATTR{type}=="1", KERNEL=="eth*", NAME="ethfe"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:0a", ATTR{type}=="1", KERNEL=="eth*", NAME="ethsrv"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:0e", ATTR{type}=="1", KERNEL=="eth*", NAME="ethsto"
