@@ -25,6 +25,10 @@ class Port:
         if self.tagged and any(v == self.name for v in self.vlans):
             raise ValueError(self.name)
 
+        # check number of BMCs
+        if len([v for v in self.vlans.values() if v.mode == 'bmc']) > 1:
+            raise ValueError(self.name, 'cannot handle more than 1 BMC')
+
     @property
     def mtu_max(self):
         """Returns the maximum MTU of all attached VLANs.
@@ -63,6 +67,8 @@ class VLAN:
         self.gateways = [ip.ip_address(g) for g in enc.get('gateways', [])]
         if self.tagged and not self.vlanid:
             raise RuntimeError('must specify vlanid for tagged VLAN', name)
+        if self.mode not in ['static', 'bmc', 'dhcp', 'null']:
+            raise ValueError(self.mode)
 
     @property
     def interface_name(self):

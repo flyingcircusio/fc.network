@@ -6,54 +6,39 @@ from fc.network.model import Port
 from fc.network.render import render, Ifaces, UdevRules, Mactab
 
 
-@pytest.fixture
-def quimby_untagged():
+@pytest.fixture(scope='module', params=['untagged', 'tagged', 'transit'])
+def render_data(request):
+    """Loads ENC inputs and expected conf.d/net.d results."""
+    flavour = request.param
+    res = {}
     with pkg_resources.resource_stream(
-            __name__, 'fixtures/enc/quimby_untagged.json') as f:
-        enc = json.loads(f.read().decode('ascii'))
-    return [Port(p) for p in enc['parameters']['network']]
-
-
-@pytest.fixture
-def quimby_tagged():
+            __name__, 'fixtures/enc/quimby_{}.json'.format(flavour)) as f:
+        res['enc'] = json.loads(f.read().decode('ascii'))['parameters']
     with pkg_resources.resource_stream(
-            __name__, 'fixtures/enc/quimby_tagged.json') as f:
-        enc = json.loads(f.read().decode('ascii'))
-    return [Port(p) for p in enc['parameters']['network']]
-
-
-def test_iface_untagged(quimby_untagged):
-    conf = render(Ifaces(), quimby_untagged)
+            __name__, 'fixtures/conf.d/net.d/quimby_{}'.format(flavour)) as f:
+        res['netd'] = f.read().decode('ascii')
     with pkg_resources.resource_stream(
-            __name__, 'fixtures/conf.d/net.d/quimby_untagged') as f:
-        assert f.read().decode('ascii') == conf
-
-
-def test_render_udev_rules(quimby_untagged):
-    rules = render(UdevRules(), quimby_untagged)
+            __name__, 'fixtures/udev/rules.d/quimby_{}'.format(flavour)) as f:
+        res['udev'] = f.read().decode('ascii')
     with pkg_resources.resource_stream(
-            __name__, 'fixtures/udev/rules.d/quimby') as f:
-        assert f.read().decode('ascii') == rules
+            __name__, 'fixtures/mactab_{}'.format(flavour)) as f:
+        res['mactab'] = f.read().decode('ascii')
+    res['ports'] = [Port(p) for p in res['enc']['network']]
+    return res
 
 
-def test_render_mactab(quimby_untagged):
-    conf = render(Mactab(), quimby_untagged)
-    with pkg_resources.resource_stream(
-            __name__, 'fixtures/mactab_quimby') as f:
-        assert f.read().decode('ascii') == conf
+def test_iface_rendered(render_data, tmpdir):
+    iface = render(Ifaces(), render_data['ports'])
+    # dump output into file for ease of debugging
+    (tmpdir / 'iface.all').write_text(iface, 'ascii')
+    assert render_data['netd'] == iface
 
 
-def test_iface_tagged(quimby_tagged):
-    conf = render(Ifaces(), quimby_tagged)
-    with pkg_resources.resource_stream(
-            __name__, 'fixtures/conf.d/net.d/quimby_tagged') as f:
-        assert f.read().decode('ascii') == conf
+def test_render_udev_rules(render_data):
+    rules = render(UdevRules(), render_data['ports'])
+    assert render_data['udev'] == rules
 
 
-def test_iface_dhcp():
-    port = Port({'port': 'mb1', 'mac': '00:11:22:33:44:55', 'vlans': {'srv': {
-        'mode': 'dhcp', 'bridged': True, 'metric': 1100}}})
-    conf = render(Ifaces(), [port])
-    with pkg_resources.resource_stream(
-            __name__, 'fixtures/conf.d/net.d/quimby_srv_dhcp') as f:
-        assert f.read().decode('ascii') == conf
+def test_render_mactab(render_data):
+    mactab = render(Mactab(), render_data['ports'])
+    assert render_data['mactab'] == mactab

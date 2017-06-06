@@ -86,5 +86,16 @@ def test_mtu_max():
     assert 1280 == Port({'port': 0, 'vlans': {'fe': {'mtu': 1280}}}).mtu_max
     assert 1500 == Port({'port': 0, 'vlans': {}}).mtu_max
 
+
+def test_no_more_than_1_bmc():
+    with pytest.raises(ValueError):
+        Port({'port': '0', 'vlans': {
+            'ipmi1': {'mode': 'bmc'}, 'ipmi2': {'mode': 'bmc'}}})
+
+
+def test_unknown_mode():
+    with pytest.raises(ValueError):
+        Port({'port': '0', 'vlans': {'fe': {'mode': 'foo'}}})
+
 # TODO cannot attach bridge to a multiplexed lowlevel interface if tag
 # interfaces are also attached

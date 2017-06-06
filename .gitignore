@@ -1,11 +1,15 @@
-syntax: glob
-
 bin/
+.cache/
+.coverage
 *.egg-info/
+.eggs/
+htmlcov/
 include/
 lib/
 lib64
+pip-selfcheck.json
 __pycache__/
 *.py[co]
-.*.sw?
 pyvenv.cfg
+.*.sw?
+tags

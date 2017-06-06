@@ -10,7 +10,7 @@ class Ifaces:
 
     def tagged_prelude(self, port):
         vlans = {v.vlanid: v.bridgebase_name for k, v in port.vlans.items()
-                 if v.mode == 'static' and v.tagged and v.vlanid}
+                 if v.mode != 'bmc' and v.tagged and v.vlanid}
         yield from TMPL.from_string("""\
 config_{{phyname}}="null"
 mtu_{{phyname}}={{mtu}}
@@ -77,8 +77,19 @@ bridge_{{iface}}="{{basedev}}"
 config_{{iface}}="dhcp"
 metric_{{iface}}={{metric}}
 mtu_{{basedev}}={{mtu}}
+dad_timeout_{{iface}}=10
 """).generate(iface=vlan.interface_name, basedev=vlan.bridgebase_name,
               metric=vlan.metric, mtu=vlan.mtu, bridged=vlan.bridged)
+
+    def null_vlan(self, vlan):
+        yield from TMPL.from_string("""\
+%% if bridged
+config_{{basedev}}="null"
+bridge_{{iface}}="{{basedev}}"
+%% endif
+config_{{iface}}="null"
+""").generate(iface=vlan.interface_name, basedev=vlan.bridgebase_name,
+              bridged=vlan.bridged)
 
     def render_item(self, port):
         yield from TMPL.from_string("""
@@ -96,7 +107,8 @@ mtu_{{basedev}}={{mtu}}
                 yield from self.dhcp_vlan(vlan)
             elif vlan.mode == 'bmc':
                 yield '# see /etc/ipmi/bmc-config.sh\n'
-            # TODO 'null' mode
+            elif vlan.mode == 'null':
+                yield from self.null_vlan(vlan)
             else:
                 raise RuntimeError(
                     "don't know how to generate config for {} mode".format(

@@ -1,0 +1,36 @@
+# Managed by configure-network. Don't edit.
+
+# === Port "0" (b8:ac:6f:15:dd:08) ===
+config_eth0="null"
+mtu_eth0=1500
+vlans_eth0="1 2 3"
+vlan1_name="ethmgm"
+vlan2_name="ethfe"
+vlan3_name="ethsrv"
+
+# === VLAN "ipmi" ===
+# see /etc/ipmi/bmc-config.sh
+
+# === VLAN "mgm" ===
+config_ethmgm="dhcp"
+metric_ethmgm=1000
+mtu_ethmgm=1500
+dad_timeout_ethmgm=10
+
+# === VLAN "fe" ===
+config_ethfe="null"
+bridge_brfe="ethfe"
+config_brfe="null"
+
+# === VLAN "srv" ===
+config_ethsrv="null"
+bridge_brsrv="ethsrv"
+config_brsrv="dhcp"
+metric_brsrv=1000
+mtu_ethsrv=1500
+dad_timeout_brsrv=10
+
+# === Port "1" (b8:ac:6f:15:dd:0c) ===
+
+# === VLAN "sto" ===
+config_ethsto="null"
