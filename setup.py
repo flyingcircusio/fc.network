@@ -1,6 +1,6 @@
 """Flying Circus network management NG"""
 
-from setuptools import setup
+from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
@@ -29,8 +29,8 @@ setup(
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python :: 3.4',
     ],
-
-    packages=['fc.network'],
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     setup_requires=['pytest-runner'],
     install_requires=[
         'Jinja2>=2.7',
