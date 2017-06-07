@@ -29,10 +29,15 @@ def test_port_name_invalid_chars():
         Port({'port': 'ext-1', 'vlans': {}})
 
 
+def test_cannot_omit_vlanid_on_tagged():
+    with pytest.raises(RuntimeError):
+        Port({'port': 0, 'vlans': {'srv': {'tagged': True}}})
+
+
 def test_cannot_mix_tagged_untagged():
     with pytest.raises(RuntimeError):
         Port({'port': 0, 'vlans': {
-            'srv': {'tagged': 3},
+            'srv': {'tagged': True, 'vlanid': 3},
             'fe': {'tagged': False},
         }})
 
@@ -62,7 +67,7 @@ def test_nets():
 
 
 def test_phyname_ifname_collision():
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         Port({'port': 'fe', 'vlans': {'fe': {'tagged': True, 'vlanid': 2}}})
 
 
@@ -88,7 +93,7 @@ def test_mtu_max():
 
 
 def test_no_more_than_1_bmc():
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         Port({'port': '0', 'vlans': {
             'ipmi1': {'mode': 'bmc'}, 'ipmi2': {'mode': 'bmc'}}})
 
@@ -96,6 +101,3 @@ def test_no_more_than_1_bmc():
 def test_unknown_mode():
     with pytest.raises(ValueError):
         Port({'port': '0', 'vlans': {'fe': {'mode': 'foo'}}})
-
-# TODO cannot attach bridge to a multiplexed lowlevel interface if tag
-# interfaces are also attached

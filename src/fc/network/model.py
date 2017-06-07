@@ -13,21 +13,23 @@ class Port:
         if self.mac == '00:00:00:00:00:00':  # legacy directory data
             self.mac = ''
         self.vlans = {name: VLAN(name, v) for name, v in enc['vlans'].items()}
-
-        # at least one VLAN runs as tagged
         self.tagged = any(v.tagged for v in self.vlans.values())
-
         self.lowlevel_name = 'eth' + (
             next(iter(self.vlans)) if not self.tagged and self.vlans
             else self.name)
 
+        # cannot mix tagged/untagged
+        if len(self.vlans) and (
+                self.tagged != all(v.tagged for v in self.vlans.values())):
+            raise RuntimeError('cannot mix tagged/untagged VLANs', self.name)
+
         # port name / VLAN name collision?
         if self.tagged and any(v == self.name for v in self.vlans):
-            raise ValueError(self.name)
+            raise RuntimeError('Port/VLAN name collision', self.name)
 
         # check number of BMCs
         if len([v for v in self.vlans.values() if v.mode == 'bmc']) > 1:
-            raise ValueError(self.name, 'cannot handle more than 1 BMC')
+            raise RuntimeError('cannot handle more than 1 BMC', self.name)
 
     @property
     def mtu_max(self):
@@ -47,7 +49,7 @@ class Port:
     @property
     def service_names(self):
         """All associated OpenRC services (net.*)"""
-        svc = set(['net.' + self.conffile_name])
+        svc = set(['net.' + self.lowlevel_name])
         for vlan in self.vlans:
             svc.update(vlan.services)
         return svc
@@ -112,5 +114,11 @@ class VLAN:
 
     @property
     def services(self):
-        """Associated OpenRC services."""
-        return set(['net.' + self.interface_name])
+        """Associated OpenRC services.
+
+        Note that we don't need to specify the demultiplexed interfaces
+        names on tagged ports since OpenRC will add them automatically.
+        """
+        if self.bridged:
+            return {'net.' + self.interface_name}
+        return set()

@@ -13,3 +13,4 @@ __pycache__/
 pyvenv.cfg
 .*.sw?
 tags
+dist/
