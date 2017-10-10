@@ -1,0 +1,13 @@
+# Managed by configure-network. Don't edit.
+# === VLAN "mgm" ===
+config_ethmgm="
+    172.20.1.90/24
+    2a02:238:f030:1c1::1075/64
+"
+routes_ethmgm="
+    default via 172.20.1.1
+    default via 2a02:238:f030:1c1::1
+"
+metric_ethmgm=2000
+mtu_ethmgm=1500
+dad_timeout_ethmgm=10

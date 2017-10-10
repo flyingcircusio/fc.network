@@ -1,0 +1,5 @@
+# Managed by configure-network. Don't edit.
+# === VLAN "srv" ===
+config_ethsrv="dhcp"
+metric_ethsrv=1000
+mtu_ethsrv=1500

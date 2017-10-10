@@ -1,0 +1,70 @@
+{
+   "classes" : [
+      "role::consul_server",
+      "role::kvm_host"
+   ],
+   "parameters" : {
+      "servicing" : true,
+      "reverses" : {
+         "2a02:238:f030:1c2::53" : "ns.dev",
+         "172.20.2.38" : "ns.dev"
+      },
+      "environment_class" : "Puppet",
+      "creation_date" : "2015-02-23T13:55:26.584174+00:00",
+      "location" : "dev",
+      "resource_group" : "services",
+      "aliases_fe" : [],
+      "environment_url" : "https://bitbucket.org/flyingcircus/fc.platform#default",
+      "rack" : "MDF W.0.1",
+      "network_policy" : "transit",
+      "interfaces" : {
+         "srv" : {
+            "bridged" : true,
+            "gateways" : { },
+            "networks" : { },
+            "mac" : "b8:ac:6f:15:dd:0a",
+            "mtu" : 1500,
+            "metric" : 1000
+         },
+         "mgm" : {
+            "bridged" : false,
+            "networks" : { },
+            "gateways" : { },
+            "mtu" : 1500,
+            "mac" : "b8:ac:6f:15:dd:08"
+         },
+         "ipmi" : {
+            "mac" : "b8:ac:6f:15:dd:10",
+            "mtu" : 1500,
+            "bridged" : false
+         }
+      },
+      "frontend_ips_v4" : 1,
+      "directory_ring" : 0,
+      "in_transit" : false,
+      "timezone" : "Europe/Berlin",
+      "production" : true,
+      "kvm_net_memory" : 30720,
+      "environment" : "development",
+      "resource_group_parent" : "",
+      "aliases_srv" : [],
+      "machine" : "physical",
+      "id" : 4218,
+      "frontend_ips_v6" : 2,
+      "profile" : "kvm",
+      "service_description" : "VM host"
+   },
+   "name" : "quimby",
+   "roles" : [
+      "consul_server",
+      "kvm_host"
+   ],
+   "last_maintenance_end" : "2017-08-28T06:52:45.981744+00:00",
+   "labels" : [
+      "env:development",
+      "fc_role:consul_server",
+      "fc_role:kvm_host",
+      "location:dev",
+      "platform:puppet"
+   ]
+}

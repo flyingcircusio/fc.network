@@ -1,0 +1,143 @@
+{
+   "parameters" : {
+      "in_transit" : false,
+      "id" : 4218,
+      "resource_group" : "services",
+      "kvm_net_memory" : 30720,
+      "timezone" : "Europe/Berlin",
+      "creation_date" : "2015-02-23T13:55:26.584174+00:00",
+      "rack" : "MDF W.0.1",
+      "location" : "dev",
+      "production" : true,
+      "profile" : "kvm",
+      "resource_group_parent" : "",
+      "frontend_ips_v4" : 1,
+      "service_description" : "VM host",
+      "directory_ring" : 0,
+      "environment_url" : "https://bitbucket.org/flyingcircus/fc.platform#default",
+      "frontend_ips_v6" : 2,
+      "aliases_fe" : [],
+      "servicing" : true,
+      "machine" : "physical",
+      "environment" : "development",
+      "reverses" : {
+         "2a02:238:f030:1c2::53" : "ns.dev",
+         "172.20.2.38" : "ns.dev"
+      },
+      "environment_class" : "Puppet",
+      "network_policy" : "tagged",
+      "interfaces" : {
+         "mgm" : {
+            "mac" : "b8:ac:6f:15:dd:0c",
+            "vlan_id" : 1,
+            "metric" : 2000,
+            "mtu" : 1500,
+            "networks" : {
+               "172.20.1.0/24" : [
+                  "172.20.1.90"
+               ],
+               "2a02:238:f030:1c1::/64" : [
+                  "2a02:238:f030:1c1::1075"
+               ]
+            },
+            "bridged" : false,
+            "gateways" : {
+               "2a02:238:f030:1c1::/64" : "2a02:238:f030:1c1::1",
+               "172.20.1.0/24" : "172.20.1.1"
+            }
+         },
+         "ipmi" : {
+            "vlan_id" : 1,
+            "gateways" : {
+               "2a02:238:f030:1c1::/64" : "2a02:238:f030:1c1::1",
+               "172.20.1.0/24" : "172.20.1.1"
+            },
+            "bridged" : false,
+            "mac" : "",
+            "networks" : {
+               "172.20.1.0/24" : [
+                  "172.20.1.91"
+               ],
+               "2a02:238:f030:1c1::/64" : [
+                  "2a02:238:f030:1c1::37"
+               ]
+            }
+         },
+         "srv" : {
+            "vlan_id" : 3,
+            "metric" : 1000,
+            "mtu" : 1500,
+            "gateways" : {
+               "172.30.3.0/24" : "172.30.3.1",
+               "172.20.3.0/24" : "172.20.3.1",
+               "2a02:238:f030:1c3::/64" : "2a02:238:f030:1c3::1"
+            },
+            "bridged" : true,
+            "networks" : {
+               "172.30.3.0/24" : [],
+               "172.20.3.0/24" : [
+                  "172.20.3.54"
+               ],
+               "2a02:238:f030:1c3::/64" : [
+                  "2a02:238:f030:1c3::1080"
+               ]
+            },
+            "mac" : "b8:ac:6f:15:dd:0c"
+         },
+         "sto" : {
+            "vlan_id" : 4,
+            "mtu" : 9000,
+            "bridged" : false,
+            "networks" : {
+               "2a02:238:f030:1c4::/64" : [
+                  "2a02:238:f030:1c4::1075"
+               ],
+               "172.20.4.0/24" : [
+                  "172.20.4.53"
+               ]
+            },
+            "mac" : "b8:ac:6f:15:dd:0e"
+         },
+         "fe" : {
+            "vlan_id" : 2,
+            "metric" : 500,
+            "mtu" : 1600,
+            "bridged" : true,
+            "gateways" : {
+               "10.2.3.0/24" : "10.2.3.1",
+               "172.20.2.0/25" : "172.20.2.1",
+               "2a02:238:f030:1c2::/64" : "2a02:238:f030:1c2::1"
+            },
+            "networks" : {
+               "172.20.2.0/25" : [
+                  "172.20.2.38"
+               ],
+               "2a02:238:f030:1c2::/64" : [
+                  "2a02:238:f030:1c2::106d",
+                  "2a02:238:f030:1c2::53"
+               ],
+               "10.2.3.0/24" : []
+            },
+            "mac" : "b8:ac:6f:15:dd:0c"
+         }
+      },
+      "aliases_srv" : []
+   },
+   "classes" : [
+      "role::consul_server",
+      "role::kvm_host"
+   ],
+   "roles" : [
+      "consul_server",
+      "kvm_host"
+   ],
+   "labels" : [
+      "env:development",
+      "fc_role:consul_server",
+      "fc_role:kvm_host",
+      "location:dev",
+      "platform:puppet"
+   ],
+   "name" : "quimby",
+   "last_maintenance_end" : "2017-08-28T06:52:45.981744+00:00"
+}

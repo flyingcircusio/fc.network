@@ -1,0 +1,6 @@
+# Managed by configure-network. Don't edit.
+# === Port b8:ac:6f:15:dd:0e ===
+config_enxb8ac6f15dd0e="null"
+mtu_enxb8ac6f15dd0e=9000
+vlans_enxb8ac6f15dd0e="4"
+vlan4_name="ethsto"

@@ -1,0 +1,5 @@
+# Managed by configure-network. Don't edit.
+# === VLAN "mgm" ===
+config_ethmgm="dhcp"
+metric_ethmgm=1000
+mtu_ethmgm=1500

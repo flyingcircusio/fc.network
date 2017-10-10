@@ -1,0 +1,15 @@
+# Managed by configure-network. Don't edit.
+# === VLAN "srv" ===
+config_ethsrv="null"
+bridge_brsrv="ethsrv"
+config_brsrv="
+    172.20.3.54/24
+    2a02:238:f030:1c3::1080/64
+"
+routes_brsrv="
+    default via 172.20.3.1
+    default via 2a02:238:f030:1c3::1
+"
+metric_brsrv=1100
+mtu_ethsrv=1500
+dad_timeout_brsrv=10

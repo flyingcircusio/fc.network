@@ -1,0 +1,8 @@
+# Managed by configure-network. Don't edit.
+# === VLAN "sto" ===
+config_ethsto="
+    172.20.4.53/24
+    2a02:238:f030:1c4::1075/64
+"
+mtu_ethsto=9000
+dad_timeout_ethsto=10
