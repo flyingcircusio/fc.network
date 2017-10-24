@@ -1,0 +1,19 @@
+# Managed by configure-network. Don't edit.
+# === VLAN "{{ vlan }}" ===
+config_{{ baseiface }}="null"
+bridge_{{ iface }}="{{ baseiface }}"
+config_{{ iface }}="
+{{ addresses }}
+"
+routes_{{ iface }}="
+{% for gw in gateways -%}
+    default via {{ gw }}
+{% endfor %}
+"
+{% if cfg.metric -%}
+metric_{{ iface }}={{ cfg.metric }}
+{% endif %}
+{% if cfg.mtu -%}
+mtu_{{ baseiface }}={{ cfg.mtu }}
+{% endif %}
+dad_timeout_{{ iface }}=10

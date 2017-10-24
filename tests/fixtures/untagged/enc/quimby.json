@@ -25,13 +25,10 @@
          "172.20.2.38" : "ns.dev"
       },
       "environment_class" : "Puppet",
-      "network_policy" : "untagged",
       "interfaces" : {
          "mgm" : {
+            "network_policy" : "untagged",
             "mac" : "b8:ac:6f:15:dd:08",
-            "vlan_id" : 1,
-            "metric": 2000,
-            "mtu" : 1500,
             "networks" : {
                "172.20.1.0/24" : [
                   "172.20.1.90"
@@ -40,21 +37,18 @@
                   "2a02:238:f030:1c1::1075"
                ]
             },
-            "bridged" : false,
             "gateways" : {
                "2a02:238:f030:1c1::/64" : "2a02:238:f030:1c1::1",
                "172.20.1.0/24" : "172.20.1.1"
             }
          },
          "ipmi" : {
-            "vlan_id" : 1,
-            "mtu" : 1500,
+            "network_policy" : "ipmi",
+            "mac" : "b8:ac:6f:15:dd:10",
             "gateways" : {
                "2a02:238:f030:1c1::/64" : "2a02:238:f030:1c1::1",
                "172.20.1.0/24" : "172.20.1.1"
             },
-            "bridged" : false,
-            "mac" : "b8:ac:6f:15:dd:10",
             "networks" : {
                "172.20.1.0/24" : [
                   "172.20.1.91"
@@ -65,15 +59,13 @@
             }
          },
          "srv" : {
-            "vlan_id" : 3,
-            "metric": 1000,
-            "mtu" : 1500,
+            "network_policy" : "untagged",
+            "mac" : "b8:ac:6f:15:dd:0a",
             "gateways" : {
                "172.30.3.0/24" : "172.30.3.1",
                "172.20.3.0/24" : "172.20.3.1",
                "2a02:238:f030:1c3::/64" : "2a02:238:f030:1c3::1"
             },
-            "bridged" : true,
             "networks" : {
                "172.30.3.0/24" : [],
                "172.20.3.0/24" : [
@@ -82,13 +74,11 @@
                "2a02:238:f030:1c3::/64" : [
                   "2a02:238:f030:1c3::1080"
                ]
-            },
-            "mac" : "b8:ac:6f:15:dd:0a"
+            }
          },
          "sto" : {
-            "vlan_id" : 4,
-            "mtu" : 9000,
-            "bridged" : false,
+            "network_policy" : "untagged",
+            "mac" : "b8:ac:6f:15:dd:0e",
             "networks" : {
                "2a02:238:f030:1c4::/64" : [
                   "2a02:238:f030:1c4::1075"
@@ -96,14 +86,11 @@
                "172.20.4.0/24" : [
                   "172.20.4.53"
                ]
-            },
-            "mac" : "b8:ac:6f:15:dd:0e"
+            }
          },
          "fe" : {
-            "vlan_id" : 2,
-            "metric": 500,
-            "mtu" : 1500,
-            "bridged" : true,
+            "network_policy" : "untagged",
+            "mac" : "b8:ac:6f:15:dd:0c",
             "gateways" : {
                "10.2.3.0/24" : "10.2.3.1",
                "172.20.2.0/25" : "172.20.2.1",
@@ -118,8 +105,7 @@
                   "2a02:238:f030:1c2::53"
                ],
                "10.2.3.0/24" : []
-            },
-            "mac" : "b8:ac:6f:15:dd:0c"
+            }
          }
       },
       "aliases_srv" : []

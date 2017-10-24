@@ -16,27 +16,22 @@
       "aliases_fe" : [],
       "environment_url" : "https://bitbucket.org/flyingcircus/fc.platform#default",
       "rack" : "MDF W.0.1",
-      "network_policy" : "transit",
       "interfaces" : {
          "srv" : {
-            "bridged" : true,
-            "gateways" : { },
-            "networks" : { },
+            "network_policy" : "transit",
             "mac" : "b8:ac:6f:15:dd:0a",
-            "mtu" : 1500,
-            "metric" : 1000
+            "gateways" : { },
+            "networks" : { }
          },
          "mgm" : {
-            "bridged" : false,
+            "network_policy" : "transit",
+            "mac" : "b8:ac:6f:15:dd:08",
             "networks" : { },
-            "gateways" : { },
-            "mtu" : 1500,
-            "mac" : "b8:ac:6f:15:dd:08"
+            "gateways" : { }
          },
          "ipmi" : {
-            "mac" : "b8:ac:6f:15:dd:10",
-            "mtu" : 1500,
-            "bridged" : false
+            "network_policy" : "ipmi",
+            "mac" : "b8:ac:6f:15:dd:10"
          }
       },
       "frontend_ips_v4" : 1,

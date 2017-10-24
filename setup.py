@@ -34,6 +34,7 @@ setup(
     setup_requires=['pytest-runner'],
     install_requires=[
         'Jinja2>=2.7',
+        'py>=1.4',
     ],
     extras_require={
         'dev': _test_reqs + ['check-manifest'],
