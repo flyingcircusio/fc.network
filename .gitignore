@@ -14,3 +14,4 @@ pyvenv.cfg
 .*.sw?
 tags
 dist/
+share/
