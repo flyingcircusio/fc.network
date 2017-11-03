@@ -1,3 +1,4 @@
 include CHANGES.rst README.rst *.ini
 recursive-include src *.py
 recursive-include tests *.py
+recursive-include src/fc/network/templates *

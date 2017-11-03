@@ -1,10 +1,8 @@
 # Managed by fc.network. Don't edit manually.
 # === VLAN {{ vlan }} ({{ mac }}) ===
-config_{{ baseiface }}="null"
-bridge_{{ iface }}="{{ baseiface }}"
 config_{{ iface }}="
 {% for addr in addresses -%}
-{{ "    " }}{{ addr }}
+{{ "    "}}{{ addr }}
 {% endfor -%}
 "
 routes_{{ iface }}="
@@ -13,5 +11,5 @@ routes_{{ iface }}="
 {% endfor -%}
 "
 metric_{{ iface }}={{ metric }}
-mtu_{{ baseiface }}={{ mtu }}
+mtu_{{ iface }}={{ mtu }}
 dad_timeout_{{ iface }}=10
