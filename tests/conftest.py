@@ -1,8 +1,7 @@
-import pytest
-
 from pkg_resources import resource_stream, resource_filename
 import configparser
 import json
+import pytest
 
 
 @pytest.fixture(scope='module', params=['untagged', 'tagged', 'transit'])

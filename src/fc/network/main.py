@@ -2,6 +2,10 @@
 
 from fc.network.policy import NetworkPolicy
 from fc.network.aux import Demux, Mactab, Udev
+from fc.network.activation import apply_configs
+import click
+import configparser
+import json
 
 
 class VLAN():
@@ -58,3 +62,18 @@ def configs(enc_ifaces, networkcfg):
         configs.extend(udev.generate())
 
     return configs
+
+
+@click.command()
+@click.option("--dry-run", "-n", is_flag=True,
+              help="Don't edit config files and don't start services.")
+@click.option("--restart/--no-restart", "-R/-r", default=True,
+              help="Start or stop services (default: yes unless dry run).")
+@click.help_option("-h", "--help")
+@click.argument("enc", type=click.File('r'))
+@click.argument("networkcfg", type=click.File('r'))
+def main(dry_run, restart, enc, networkcfg):
+    cp = configparser.ConfigParser()
+    cfg = configs(json.load(enc)['parameters']['interfaces'],
+                  cp.read_file(networkcfg))
+    apply_configs(cfg, not dry_run, not dry_run and restart)

@@ -26,8 +26,9 @@ class NetworkPolicy():
     def __init__(self, vlan):
         self.vlan = vlan
         self.tmpl = jinja2.Environment(
+            autoescape=False,
+            keep_trailing_newline=True,
             loader=jinja2.PackageLoader(__name__),
-            autoescape=False
         )
 
     def extract_addrs(self):

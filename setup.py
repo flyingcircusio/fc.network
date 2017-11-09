@@ -35,6 +35,7 @@ setup(
     install_requires=[
         'Jinja2>=2.7',
         'py>=1.4',
+        'click>=6',
     ],
     extras_require={
         'dev': _test_reqs + ['check-manifest'],
@@ -44,7 +45,7 @@ setup(
     package_data={'fc-network': []},
     entry_points={
         'console_scripts': [
-            'configure-network=fc.network:main',
+            'fc-network=fc.network.main:main',
         ],
     },
 )
