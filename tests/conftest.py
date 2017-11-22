@@ -1,4 +1,4 @@
-from pkg_resources import resource_stream, resource_filename
+from pkg_resources import resource_stream, resource_filename, resource_string
 import configparser
 import json
 import pytest
@@ -16,7 +16,7 @@ def enc(request):
 @pytest.fixture
 def untagged():
     with resource_stream(__name__, 'fixtures/untagged/enc/quimby.json') as f:
-        return json.loads(f.read().decode('ascii'))
+        return json.loads(f.read().decode('ascii'))['parameters']['interfaces']
 
 
 @pytest.fixture
@@ -24,3 +24,11 @@ def networkcfg():
     cp = configparser.ConfigParser()
     cp.read(resource_filename(__name__, 'fixtures/fc-network.cfg'))
     return cp
+
+
+@pytest.fixture
+def netd():
+    def load(testset, filename):
+        return resource_string(__name__, 'fixtures/{}/conf.d/net.d/{}'.format(
+            testset, filename)).decode('ascii')
+    return load

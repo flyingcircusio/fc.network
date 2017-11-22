@@ -38,11 +38,11 @@ class VLAN():
         return self.staticcfg.getint('metric')
 
 
-def build_policy(name, enc_ifaces, networkcfg):
+def build_policy(name, enc, networkcfg):
     """Returns network policies + VLANS for enc interfaces."""
     static = (networkcfg[name] if name in networkcfg
               else networkcfg[networkcfg.default_section])
-    vlan = VLAN(name, enc_ifaces[name], static)
+    vlan = VLAN(name, enc, static)
     return NetworkPolicy.for_vlan(vlan)
 
 
@@ -52,8 +52,8 @@ def configs(enc_ifaces, networkcfg):
     mactab = Mactab()
     udev = Udev()
 
-    for name in enc_ifaces:
-        policy = build_policy(name, enc_ifaces, networkcfg)
+    for name, enc in enc_ifaces.items():
+        policy = build_policy(name, enc, networkcfg)
         if not policy:
             continue
         configs.extend(policy.generate(demux=demux, mactab=mactab, udev=udev))
@@ -65,15 +65,18 @@ def configs(enc_ifaces, networkcfg):
 
 
 @click.command()
-@click.option("--dry-run", "-n", is_flag=True,
+@click.option("--edit/--no-edit", "-e/-n", default=True, show_default=True,
               help="Don't edit config files and don't start services.")
 @click.option("--restart/--no-restart", "-R/-r", default=True,
-              help="Start or stop services (default: yes unless dry run).")
+              help="Start or stop services.  [default: yes unless no-edit]")
+@click.option("--prefix", default='/etc', help='Root for config file editing.',
+              show_default=True, type=click.Path(file_okay=False))
 @click.help_option("-h", "--help")
 @click.argument("enc", type=click.File('r'))
 @click.argument("networkcfg", type=click.File('r'))
-def main(dry_run, restart, enc, networkcfg):
+def main(edit, restart, enc, networkcfg, prefix):
     cp = configparser.ConfigParser()
-    cfg = configs(json.load(enc)['parameters']['interfaces'],
-                  cp.read_file(networkcfg))
-    apply_configs(cfg, not dry_run, not dry_run and restart)
+    cp.read_file(networkcfg)
+    cfg = configs(json.load(enc)['parameters']['interfaces'], cp)
+    apply_configs(cfg, do_edit=edit, do_restart=edit and restart,
+                  prefix=prefix)

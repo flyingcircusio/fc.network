@@ -53,25 +53,25 @@ class UntaggedPolicy(NetworkPolicy):
 
     def generate(self, mactab, udev, **kw):
         vlan = self.vlan
+        name = self.vlan.name
         addresses, gateways = self.extract_addrs()
+        v = dict(
+            iface='eth' + name, vlan=name, addresses=addresses,
+            gateways=gateways, mac=vlan.mac, metric=vlan.metric, mtu=vlan.mtu,
+            nets=self.vlan.networks.keys()
+        )
         if vlan.bridged:
-            iface = 'br' + vlan.name
-            baseiface = 'eth' + vlan.name
-            content = self.tmpl.get_template('iface_untagged_bridged').\
-                render(iface=iface, baseiface=baseiface, vlan=vlan.name,
-                       addresses=addresses, gateways=gateways, mac=vlan.mac,
-                       metric=vlan.metric, mtu=vlan.mtu)
-            yield Conffile('conf.d/net.d/iface.' + iface,
-                           content,
-                           set(['net.' + iface, 'net.' + baseiface]))
+            v['baseiface'] = v['iface']
+            v['iface'] = 'br' + name
+            yield Conffile(
+                'conf.d/net.d/iface.br' + name,
+                self.tmpl.get_template('iface_untagged_bridged').render(**v),
+                set(['net.br' + name, 'net.eth' + name]))
         else:
-            iface = 'eth' + vlan.name
-            content = self.tmpl.get_template('iface_untagged_unbridged').\
-                render(iface=iface, vlan=vlan.name, mac=vlan.mac,
-                       addresses=addresses, gateways=gateways,
-                       metric=vlan.metric, mtu=vlan.mtu)
-            yield Conffile('conf.d/net.d/iface.' + iface,
-                           content, set(["net." + iface]))
+            yield Conffile(
+                'conf.d/net.d/iface.eth' + name,
+                self.tmpl.get_template('iface_untagged_unbridged').render(**v),
+                set(['net.eth' + name]))
 
 
 class TaggedPolicy(NetworkPolicy):

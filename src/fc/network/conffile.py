@@ -2,6 +2,7 @@
 
 import click
 import difflib
+import os
 import os.path as p
 
 
@@ -17,6 +18,7 @@ class Conffile():
         """
         self.relpath = relpath
         self.content = content
+        assert isinstance(svc, set)
         self.svc = svc
 
     def __eq__(self, other):
@@ -30,8 +32,11 @@ class Conffile():
             p.join(prefix, other.relpath), p.join(prefix, self.relpath)))
         return ''.join(diff)
 
-    def apply(self, prefix='', do=True):
-        path = p.join(prefix, self.relpath)
+    def path(self, prefix):
+        return p.join(prefix, self.relpath)
+
+    def apply(self, prefix, do=True):
+        path = self.path(prefix)
         try:
             with open(path) as f:
                 old = f.read()
@@ -45,6 +50,7 @@ class Conffile():
                 old.splitlines(True), self.content.splitlines(True),
                 path, path))))
         if do:
+            os.makedirs(p.dirname(path), exist_ok=True)
             with open(path, 'w') as f:
                 f.write(self.content)
         return True

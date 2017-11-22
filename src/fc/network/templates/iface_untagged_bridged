@@ -8,9 +8,19 @@ config_{{ iface }}="
 {% endfor -%}
 "
 routes_{{ iface }}="
+{% for net in nets -%}
+{{ "    " }}{{ net }} table {{ vlan }} rto_min 20ms
+{% endfor -%}
 {% for gw in gateways -%}
+{{ "    " }}default via {{ gw }} table {{ vlan }}
 {{ "    " }}default via {{ gw }}
 {% endfor -%}
+"
+rules_{{ iface }}="
+{{ "    " }}to {{ net }} table {{ vlan }} priority {{ metric }}
+{{ "    " }}from {{ addr }} table {{ vlan }} priority {{ metric }}
+"
+rules6_{{ iface }}="
 "
 metric_{{ iface }}={{ metric }}
 mtu_{{ baseiface }}={{ mtu }}
