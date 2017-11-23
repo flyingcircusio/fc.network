@@ -44,8 +44,8 @@ class Conffile():
                 return False
         except IOError:
             old = ''
-        click.echo('{} configuration file:\n{}'.format(
-            'Editing' if do else 'Would edit',
+        click.echo('{} configuration file {}:\n{}'.format(
+            'Editing' if do else 'Would edit', path,
             ''.join(difflib.unified_diff(
                 old.splitlines(True), self.content.splitlines(True),
                 path, path))))

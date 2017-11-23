@@ -1,41 +1,12 @@
 """Flying Circus network configuration utility."""
 
-from fc.network.policy import NetworkPolicy
-from fc.network.aux import Demux, Mactab, Udev
-from fc.network.activation import apply_configs
+from .activation import apply_configs
+from .policy import NetworkPolicy
+from .vlan import VLAN
 import click
 import configparser
 import json
-
-
-class VLAN():
-
-    def __init__(self, name, enc, staticcfg):
-        self.name = name
-        self.network_policy = enc.get('network_policy') or 'puppet'
-        self.mac = enc['mac'].lower() or '00:00:00:00:00:00'
-        self.networks = enc.get('networks', {})
-        self.gateways = enc.get('gateways', {})
-        self.staticcfg = staticcfg
-
-    def __str__(self):
-        return 'VLAN({})'.format(self.__dict__)
-
-    @property
-    def bridged(self):
-        return self.staticcfg.getboolean('bridged')
-
-    @property
-    def mtu(self):
-        return self.staticcfg.getint('mtu')
-
-    @property
-    def vlan_id(self):
-        return self.staticcfg.getint('vlan_id')
-
-    @property
-    def metric(self):
-        return self.staticcfg.getint('metric')
+import sys
 
 
 def build_policy(name, enc, networkcfg):
@@ -48,19 +19,11 @@ def build_policy(name, enc, networkcfg):
 
 def configs(enc_ifaces, networkcfg):
     configs = []
-    demux = Demux()
-    mactab = Mactab()
-    udev = Udev()
-
     for name, enc in enc_ifaces.items():
         policy = build_policy(name, enc, networkcfg)
         if not policy:
             continue
-        configs.extend(policy.generate(demux=demux, mactab=mactab, udev=udev))
-        configs.extend(demux.generate())
-        configs.extend(mactab.generate())
-        configs.extend(udev.generate())
-
+        configs.extend(policy.generate())
     return configs
 
 
@@ -78,5 +41,7 @@ def main(edit, restart, enc, networkcfg, prefix):
     cp = configparser.ConfigParser()
     cp.read_file(networkcfg)
     cfg = configs(json.load(enc)['parameters']['interfaces'], cp)
-    apply_configs(cfg, do_edit=edit, do_restart=edit and restart,
-                  prefix=prefix)
+    changed = apply_configs(cfg, do_edit=edit, do_restart=edit and restart,
+                            prefix=prefix)
+    if changed:
+        sys.exit(3)

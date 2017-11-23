@@ -1,27 +1,3 @@
-# Managed by fc.network. Don't edit manually.
-# === VLAN {{ vlan }} ({{ mac }}) ===
 config_{{ baseiface }}="null"
 bridge_{{ iface }}="{{ baseiface }}"
-config_{{ iface }}="
-{% for addr in addresses -%}
-{{ "    " }}{{ addr }}
-{% endfor -%}
-"
-routes_{{ iface }}="
-{% for net in nets -%}
-{{ "    " }}{{ net }} table {{ vlan }} rto_min 20ms
-{% endfor -%}
-{% for gw in gateways -%}
-{{ "    " }}default via {{ gw }} table {{ vlan }}
-{{ "    " }}default via {{ gw }}
-{% endfor -%}
-"
-rules_{{ iface }}="
-{{ "    " }}to {{ net }} table {{ vlan }} priority {{ metric }}
-{{ "    " }}from {{ addr }} table {{ vlan }} priority {{ metric }}
-"
-rules6_{{ iface }}="
-"
-metric_{{ iface }}={{ metric }}
 mtu_{{ baseiface }}={{ mtu }}
-dad_timeout_{{ iface }}=10

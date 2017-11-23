@@ -1,6 +1,5 @@
 from fc.network.main import build_policy, configs
 from fc.network.conffile import Conffile
-from fc.network.aux import Mactab, Udev
 
 
 def test_generated_configs(untagged, networkcfg):
@@ -15,19 +14,39 @@ def test_generated_configs(untagged, networkcfg):
 
 
 def test_config_mgm_untagged(untagged, networkcfg, netd):
+    """No bridging."""
     pol = build_policy('mgm', untagged['mgm'], networkcfg)
     exp = Conffile('conf.d/net.d/iface.ethmgm',
                    netd('untagged', 'iface.ethmgm'),
                    set(['net.ethmgm']))
-    assert next(pol.generate(mactab=Mactab(), udev=Udev())).diff(exp) == ""
+    assert next(pol.generate()).diff(exp) == ""
 
 
 def test_config_fe_untagged(untagged, networkcfg, netd):
+    """Bridged."""
     pol = build_policy('fe', untagged['fe'], networkcfg)
     exp = Conffile('conf.d/net.d/iface.brfe',
                    netd('untagged', 'iface.brfe'),
                    set(['net.ethfe', 'net.brfe']))
-    assert next(pol.generate(mactab=Mactab(), udev=Udev())).diff(exp) == ""
+    assert next(pol.generate()).diff(exp) == ""
+
+
+def test_config_srv_untagged(untagged, networkcfg, netd):
+    """Test with default values from config file."""
+    pol = build_policy('srv', untagged['srv'], networkcfg)
+    exp = Conffile('conf.d/net.d/iface.brsrv',
+                   netd('untagged', 'iface.brsrv'),
+                   set(['net.ethsrv', 'net.brsrv']))
+    assert next(pol.generate()).diff(exp) == ""
+
+
+def test_config_sto_untagged(untagged, networkcfg, netd):
+    """Test with default values from config file."""
+    pol = build_policy('sto', untagged['sto'], networkcfg)
+    exp = Conffile('conf.d/net.d/iface.ethsto',
+                   netd('untagged', 'iface.ethsto'),
+                   set(['net.ethsto']))
+    assert next(pol.generate()).diff(exp) == ""
 
 
 # XXX test_ipmi

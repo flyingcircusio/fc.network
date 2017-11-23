@@ -1,15 +1,29 @@
-# Managed by configure-network. Don't edit.
-# === VLAN "srv" ===
-config_ethsrv="null"
-bridge_brsrv="ethsrv"
+# Managed by fc-network. Don't edit manually.
+# === VLAN srv (b8:ac:6f:15:dd:0a) ===
 config_brsrv="
     172.20.3.54/24
     2a02:238:f030:1c3::1080/64
 "
 routes_brsrv="
+    172.20.3.0/24 table srv rto_min 20ms
+    172.30.3.0/24 table srv rto_min 20ms
+    2a02:238:f030:1c3::/64 table srv rto_min 20ms
+    default via 172.20.3.1 table srv
     default via 172.20.3.1
+    default via 2a02:238:f030:1c3::1 table srv
     default via 2a02:238:f030:1c3::1
 "
-metric_brsrv=1100
-mtu_ethsrv=1500
+rules_brsrv="
+    from 172.20.3.54/24 table srv priority 700
+    to 172.20.3.0/24 table srv priority 700
+    to 172.30.3.0/24 table srv priority 700
+"
+rules6_brsrv="
+    from 2a02:238:f030:1c3::1080/64 table srv priority 700
+    to 2a02:238:f030:1c3::/64 table srv priority 700
+"
+metric_brsrv=700
 dad_timeout_brsrv=10
+config_ethsrv="null"
+bridge_brsrv="ethsrv"
+mtu_ethsrv=1500

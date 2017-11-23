@@ -1,9 +1,6 @@
 """Network policy abstraction and templating wire-up."""
 
-
 from fc.network.conffile import Conffile
-
-import ipaddress
 import jinja2
 
 
@@ -31,19 +28,18 @@ class NetworkPolicy():
             loader=jinja2.PackageLoader(__name__),
         )
 
-    def extract_addrs(self):
-        addresses = []
-        for n, addr in self.vlan.networks.items():
-            net = ipaddress.ip_network(n)
-            addr = (ipaddress.ip_interface('{}/{}'.format(a, net.prefixlen))
-                    for a in addr)
-            addresses.extend(str(a) for a in addr)
-        # filter GW list for locally configured addresses
+    def gateways_filtered(self):
         gateways = []
         for net, addr in self.vlan.networks.items():
             if len(addr) > 0 and net in self.vlan.gateways:
                 gateways.append(self.vlan.gateways[net])
-        return sorted(addresses), sorted(gateways)
+        return sorted(gateways)
+
+    def conffile(self, relpath, templates, values, services):
+        """Wrapper for template generation."""
+        out = ''.join(self.tmpl.get_template(t).render(**values)
+                      for t in templates)
+        return Conffile(relpath, out, set(services))
 
     def generate(self, **kw):
         raise NotImplementedError()
@@ -51,27 +47,28 @@ class NetworkPolicy():
 
 class UntaggedPolicy(NetworkPolicy):
 
-    def generate(self, mactab, udev, **kw):
+    def generate(self, **kw):
         vlan = self.vlan
         name = self.vlan.name
-        addresses, gateways = self.extract_addrs()
         v = dict(
-            iface='eth' + name, vlan=name, addresses=addresses,
-            gateways=gateways, mac=vlan.mac, metric=vlan.metric, mtu=vlan.mtu,
-            nets=self.vlan.networks.keys()
+            iface='eth' + name, vlan=name,
+            addresses=vlan.addrs(), addr4=vlan.addrs(4), addr6=vlan.addrs(6),
+            nets=vlan.nets(), nets4=vlan.nets(4), nets6=vlan.nets(6),
+            gateways=self.gateways_filtered(), mac=vlan.mac,
+            metric=vlan.metric, mtu=vlan.mtu,
         )
         if vlan.bridged:
             v['baseiface'] = v['iface']
             v['iface'] = 'br' + name
-            yield Conffile(
+            yield self.conffile(
                 'conf.d/net.d/iface.br' + name,
-                self.tmpl.get_template('iface_untagged_bridged').render(**v),
-                set(['net.br' + name, 'net.eth' + name]))
+                ['iface_untagged_common', 'iface_untagged_bridged'], v,
+                ['net.br' + name, 'net.eth' + name])
         else:
-            yield Conffile(
+            yield self.conffile(
                 'conf.d/net.d/iface.eth' + name,
-                self.tmpl.get_template('iface_untagged_unbridged').render(**v),
-                set(['net.eth' + name]))
+                ['iface_untagged_common', 'iface_untagged_unbridged'], v,
+                ['net.eth' + name])
 
 
 class TaggedPolicy(NetworkPolicy):

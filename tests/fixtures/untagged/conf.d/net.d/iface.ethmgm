@@ -1,13 +1,25 @@
-# Managed by fc.network. Don't edit manually.
+# Managed by fc-network. Don't edit manually.
 # === VLAN mgm (b8:ac:6f:15:dd:08) ===
 config_ethmgm="
     172.20.1.90/24
     2a02:238:f030:1c1::1075/64
 "
 routes_ethmgm="
+    172.20.1.0/24 table mgm rto_min 20ms
+    2a02:238:f030:1c1::/64 table mgm rto_min 20ms
+    default via 172.20.1.1 table mgm
     default via 172.20.1.1
+    default via 2a02:238:f030:1c1::1 table mgm
     default via 2a02:238:f030:1c1::1
 "
-metric_ethmgm=2000
-mtu_ethmgm=1500
+rules_ethmgm="
+    from 172.20.1.90/24 table mgm priority 900
+    to 172.20.1.0/24 table mgm priority 900
+"
+rules6_ethmgm="
+    from 2a02:238:f030:1c1::1075/64 table mgm priority 900
+    to 2a02:238:f030:1c1::/64 table mgm priority 900
+"
+metric_ethmgm=900
 dad_timeout_ethmgm=10
+mtu_ethmgm=1500
