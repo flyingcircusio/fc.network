@@ -33,9 +33,10 @@ setup(
     package_dir={"": "src"},
     setup_requires=['pytest-runner'],
     install_requires=[
+        'click>=6',
+        'colorama>=0.3',
         'Jinja2>=2.7',
         'py>=1.4',
-        'click>=6',
     ],
     extras_require={
         'dev': _test_reqs + ['check-manifest'],

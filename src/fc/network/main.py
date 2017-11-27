@@ -41,7 +41,7 @@ def main(edit, restart, enc, networkcfg, prefix):
     cp = configparser.ConfigParser()
     cp.read_file(networkcfg)
     cfg = configs(json.load(enc)['parameters']['interfaces'], cp)
-    changed = apply_configs(cfg, do_edit=edit, do_restart=edit and restart,
-                            prefix=prefix)
+    changed = apply_configs(cfg, prefix=prefix, do_edit=edit,
+                            do_restart=edit and restart)
     if changed:
         sys.exit(3)
