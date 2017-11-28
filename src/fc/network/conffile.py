@@ -2,6 +2,7 @@
 
 import click
 import difflib
+import glob
 import os
 import os.path as p
 
@@ -44,8 +45,10 @@ class Conffile():
                 return False
         except IOError:
             old = ''
-        click.echo('{} configuration file {}:\n{}'.format(
-            'Editing' if do else 'Would edit', path,
+        if not do:
+            click.secho('NO-DO: ', nl=False, fg='yellow')
+        click.echo('Editing configuration file {}:\n{}'.format(
+            path,
             ''.join(difflib.unified_diff(
                 old.splitlines(True), self.content.splitlines(True),
                 path, path))))
@@ -54,3 +57,27 @@ class Conffile():
             with open(path, 'w') as f:
                 f.write(self.content)
         return True
+
+
+def cleanup(present, desired, do=True):
+    """Unmanage stale files.
+
+    `present` is a glob expression which defines the cleanup scope
+    (e.g., /path/to/iface.*).
+    `desired` is a set or generator of config files to keep.
+    Note that it is best to specify absolute paths for both parameters.
+    Returns True if anything (has been|would have been) deleted.
+    """
+    present = set(glob.glob(present))
+    desired = set(desired)
+    remove = present - desired
+    if not remove:
+        return False
+    if not do:
+        click.secho('NO-DO: ', nl=False, fg='yellow')
+    click.echo('Removing superfluous config files: {}'.
+               format(', '.join(remove)))
+    if do:
+        for f in remove:
+            os.unlink(f)
+    return True

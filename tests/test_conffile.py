@@ -1,6 +1,7 @@
-from fc.network.conffile import Conffile
+from fc.network.conffile import Conffile, cleanup
 import pkg_resources
 import pytest
+import os.path as p
 
 
 @pytest.fixture
@@ -42,3 +43,25 @@ def test_nodo(tmpdir):
     c = Conffile(str(f), 'bar\n')
     assert c.apply('', do=False) is True, 'should report file as edited'
     assert 'foo\n' == f.read()
+
+
+def test_cleanup_removes_old_file(tmpdir):
+    tmpdir.ensure('iface.new')
+    tmpdir.ensure('iface.old')
+    assert cleanup(str(tmpdir / 'iface.*'), [str(tmpdir / 'iface.new')],
+                   do=False)
+    assert p.exists(str(tmpdir / 'iface.old'))
+
+    assert cleanup(str(tmpdir / 'iface.*'), [str(tmpdir / 'iface.new')],
+                   do=True)
+    assert not p.exists(str(tmpdir / 'iface.old'))
+    assert p.exists(str(tmpdir / 'iface.new'))
+
+
+def test_cleanup_nothing_to_do(tmpdir):
+    tmpdir.ensure('iface.0')
+    tmpdir.ensure('iface.1')
+    assert not cleanup(str(tmpdir / 'iface.*'),
+                       [str(tmpdir / 'iface.0'), str(tmpdir / 'iface.1')])
+    assert p.exists(str(tmpdir / 'iface.0'))
+    assert p.exists(str(tmpdir / 'iface.1'))

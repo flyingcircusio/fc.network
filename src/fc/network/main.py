@@ -1,6 +1,7 @@
 """Flying Circus network configuration utility."""
 
 from .activation import apply_configs
+from .aux import Udev
 from .policy import NetworkPolicy
 from .vlan import VLAN
 import click
@@ -18,12 +19,16 @@ def build_policy(name, enc, networkcfg):
 
 
 def configs(enc_ifaces, networkcfg):
+    aux_configs = [Udev()]
     configs = []
     for name, enc in enc_ifaces.items():
         policy = build_policy(name, enc, networkcfg)
+        policy.register(aux_configs)
         if not policy:
             continue
         configs.extend(policy.generate())
+    for aux in aux_configs:
+        configs.extend(aux.generate())
     return configs
 
 

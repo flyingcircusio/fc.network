@@ -27,22 +27,28 @@ class NetworkPolicy():
             keep_trailing_newline=True,
             loader=jinja2.PackageLoader(__name__),
         )
+        self.aux_configs = []
 
-    def gateways_filtered(self):
+    def register(self, aux_configs):
+        self.aux_configs.extend(aux_configs)
+
+    def generate(self, **kw):
+        return []
+
+    def _gateways_filtered(self):
         gateways = []
         for net, addr in self.vlan.networks.items():
             if len(addr) > 0 and net in self.vlan.gateways:
                 gateways.append(self.vlan.gateways[net])
         return sorted(gateways)
 
-    def conffile(self, relpath, templates, values, services):
+    def _conffile(self, relpath, templates, values, services):
         """Wrapper for template generation."""
+        for aux in self.aux_configs:
+            aux.register_iface(relpath, values, services)
         out = ''.join(self.tmpl.get_template(t).render(**values)
                       for t in templates)
         return Conffile(relpath, out, set(services))
-
-    def generate(self, **kw):
-        raise NotImplementedError()
 
 
 class UntaggedPolicy(NetworkPolicy):
@@ -54,18 +60,18 @@ class UntaggedPolicy(NetworkPolicy):
             iface='eth' + name, vlan=name,
             addresses=vlan.addrs(), addr4=vlan.addrs(4), addr6=vlan.addrs(6),
             nets=vlan.nets(), nets4=vlan.nets(4), nets6=vlan.nets(6),
-            gateways=self.gateways_filtered(), mac=vlan.mac,
+            gateways=self._gateways_filtered(), mac=vlan.mac,
             metric=vlan.metric, mtu=vlan.mtu,
         )
         if vlan.bridged:
             v['baseiface'] = v['iface']
             v['iface'] = 'br' + name
-            yield self.conffile(
+            yield self._conffile(
                 'conf.d/net.d/iface.br' + name,
                 ['iface_untagged_common', 'iface_untagged_bridged'], v,
                 ['net.br' + name, 'net.eth' + name])
         else:
-            yield self.conffile(
+            yield self._conffile(
                 'conf.d/net.d/iface.eth' + name,
                 ['iface_untagged_common', 'iface_untagged_unbridged'], v,
                 ['net.eth' + name])
@@ -81,6 +87,6 @@ class TransitPolicy(NetworkPolicy):
     pass
 
 
-class IPMIPolicy(UntaggedPolicy):  # XXX is IPMI really untagged?
+class IPMIPolicy(NetworkPolicy):  # XXX is IPMI really untagged?
 
     pass

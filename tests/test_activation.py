@@ -1,6 +1,4 @@
-from fc.network.conffile import Conffile
 from fc.network.activation import OpenRC
-import os
 import pytest
 
 
@@ -14,18 +12,7 @@ def initd(tmpdir):
     return (tmpdir / 'init.d').ensure(dir=True)
 
 
-def test_cleanup_confd(tmpdir):
-    tmpdir.mkdir('conf.d')
-    p = tmpdir.mkdir('conf.d', 'net.d')
-    p.ensure('iface.new')
-    p.ensure('iface.old')
-    c = Conffile('conf.d/net.d/iface.new', '')
-    OpenRC(prefix=str(tmpdir)).cleanup([c])
-    assert os.path.exists(str(p / 'iface.new'))
-    assert not os.path.exists(str(p / 'iface.old'))
-
-
-def test_running(monkeypatch):
+def test_running(monkeypatch, tmpdir):
     def mock_check_output(*args, **kw):
         return (b"""\
  * Caching service dependencies ...                          [ ok ]
@@ -44,8 +31,7 @@ Runlevel: default
  named                                                [  started  ]
 """)
     monkeypatch.setattr('subprocess.check_output', mock_check_output)
-    assert set(['net.brsrv', 'net.ethfe', 'net.ethsto']
-               ) == OpenRC().running()
+    assert {'net.brsrv', 'net.ethfe', 'net.ethsto'} == OpenRC().running()
 
 
 def test_enabled(rl, initd, tmpdir):
@@ -57,8 +43,8 @@ def test_enabled(rl, initd, tmpdir):
     (rl / 'net.brsrv').mksymlinkto(initd / 'net.brsrv')
     # stray file
     (rl / 'net.ethstb').ensure()
-    assert set(['net.brfe', 'net.ethfe', 'net.ethsto']
-               ) == OpenRC(prefix=str(tmpdir)).enabled()
+    assert {'net.brfe', 'net.ethfe', 'net.ethsto'} == \
+        OpenRC(prefix=str(tmpdir)).enabled()
 
 
 def test_disable(rl, initd, tmpdir):
