@@ -32,6 +32,13 @@ class VLAN():
             return [n for n in self._networks if n.version == ipvers]
         return self._networks
 
+    def gateways_filtered(self):
+        gateways = []
+        for net, addr in self.networks.items():
+            if len(addr) > 0 and net in self.gateways:
+                gateways.append(self.gateways[net])
+        return sorted(gateways)
+
     @property
     def bridged(self):
         return self.staticcfg.getboolean('bridged')

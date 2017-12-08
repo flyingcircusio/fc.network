@@ -1,35 +1,35 @@
 """Flying Circus network configuration utility."""
 
-from .activation import apply_configs
-from .aux import Udev
+from .activation import IfacesActivation, matryoshka
+from .aux import Udev, Mactab, Demux, UdevActivation, MactabActivation
 from .policy import NetworkPolicy
-from .vlan import VLAN
 import click
 import configparser
 import json
 import sys
 
 
-def build_policy(name, enc, networkcfg):
-    """Returns network policies + VLANS for enc interfaces."""
-    static = (networkcfg[name] if name in networkcfg
-              else networkcfg[networkcfg.default_section])
-    vlan = VLAN(name, enc, static)
-    return NetworkPolicy.for_vlan(vlan)
-
-
-def configs(enc_ifaces, networkcfg):
-    aux_configs = [Udev()]
-    configs = []
+def instantiate(enc_ifaces, networkcfg):
+    mactab = Mactab()
+    udev = Udev()
+    demux = Demux()
+    policies = []
     for name, enc in enc_ifaces.items():
-        policy = build_policy(name, enc, networkcfg)
-        policy.register(aux_configs)
-        if not policy:
-            continue
-        configs.extend(policy.generate())
-    for aux in aux_configs:
-        configs.extend(aux.generate())
-    return configs
+        policy = NetworkPolicy.build(name, enc, networkcfg)
+        policy.register([mactab, udev, demux])
+        policies.append(policy)
+
+    # NetworkPolicy.generate() must be called first to trigger callbacks
+    iface_configs = []
+    for p in policies:
+        iface_configs.extend(p.generate())
+    iface_configs.extend(demux.generate())
+
+    return matryoshka([
+        UdevActivation(udev.generate()),
+        MactabActivation(mactab.generate()),
+        IfacesActivation(iface_configs),
+    ])
 
 
 @click.command()
@@ -45,8 +45,8 @@ def configs(enc_ifaces, networkcfg):
 def main(edit, restart, enc, networkcfg, prefix):
     cp = configparser.ConfigParser()
     cp.read_file(networkcfg)
-    cfg = configs(json.load(enc)['parameters']['interfaces'], cp)
-    changed = apply_configs(cfg, prefix=prefix, do_edit=edit,
-                            do_restart=edit and restart)
+    activation = instantiate(json.load(enc)['parameters']['interfaces'], cp)
+    changed = activation.activate(prefix, edit, restart)
+    # XXX clean up: iface, udev
     if changed:
         sys.exit(3)

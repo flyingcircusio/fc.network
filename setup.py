@@ -36,6 +36,7 @@ setup(
         'click>=6',
         'colorama>=0.3',
         'Jinja2>=2.7',
+        'orderedset>=2.0',
         'py>=1.4',
     ],
     extras_require={

@@ -3,8 +3,11 @@
 import click
 import difflib
 import glob
+import orderedset
 import os
 import os.path as p
+
+set = orderedset.OrderedSet
 
 
 class Conffile():
@@ -19,7 +22,6 @@ class Conffile():
         """
         self.relpath = relpath
         self.content = content
-        assert isinstance(svc, set)
         self.svc = svc
 
     def __eq__(self, other):
@@ -36,7 +38,11 @@ class Conffile():
     def path(self, prefix):
         return p.join(prefix, self.relpath)
 
-    def apply(self, prefix, do=True):
+    def write(self, prefix, do=True):
+        """Edits file on disk or pretends to do so.
+
+        Returns True is anything (has been|should be) changed.
+        """
         path = self.path(prefix)
         try:
             with open(path) as f:
@@ -57,6 +63,14 @@ class Conffile():
             with open(path, 'w') as f:
                 f.write(self.content)
         return True
+
+
+def writeall(configs, prefix, do=True):
+    restart_svc = set()
+    for config in configs:
+        if config.write(prefix, do):
+            restart_svc.update(config.svc)
+    return restart_svc
 
 
 def cleanup(present, desired, do=True):
