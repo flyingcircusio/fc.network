@@ -15,9 +15,16 @@ def enc(request):
 
 @pytest.fixture
 def untagged():
+    """ENC interfaces for quimby untagged."""
     with resource_stream(__name__, 'fixtures/untagged/enc/quimby.json') as f:
         return json.loads(f.read().decode('ascii'))['parameters']['interfaces']
 
+
+@pytest.fixture
+def tagged():
+    """ENC interfaces for quimby tagged."""
+    with resource_stream(__name__, 'fixtures/tagged/enc/quimby.json') as f:
+        return json.loads(f.read().decode('ascii'))['parameters']['interfaces']
 
 @pytest.fixture
 def networkcfg():
@@ -28,6 +35,7 @@ def networkcfg():
 
 @pytest.fixture
 def netd():
+    """Expected result config file."""
     def load(testset, filename):
         return resource_string(__name__, 'fixtures/{}/conf.d/net.d/{}'.format(
             testset, filename)).decode('ascii')

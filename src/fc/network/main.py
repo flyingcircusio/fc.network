@@ -16,6 +16,7 @@ def instantiate(enc_ifaces, networkcfg):
     policies = []
     for name, enc in enc_ifaces.items():
         policy = NetworkPolicy.build(name, enc, networkcfg)
+# XXX incorporate into __init__?
         policy.register([mactab, udev, demux])
         policies.append(policy)
 
