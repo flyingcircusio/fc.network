@@ -28,4 +28,4 @@ metric_brfe=500
 dad_timeout_brfe=10
 config_ethfe="null"
 bridge_brfe="ethfe"
-mtu_ethfe=1500
+mtu_ethfe=1600

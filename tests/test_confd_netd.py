@@ -39,9 +39,38 @@ def test_config_sto_untagged(untagged, networkcfg, netd):
     assert next(pol.generate()).diff(exp) == ""
 
 
-def test_config_tagged(tagged, networkcfg, netd):
-    activations = instantiate(tagged, networkcfg)
-    ifaces_act = activations.pop()
+def test_iface_config_tagged(tagged, networkcfg, netd):
+    ifaces_activation = instantiate(tagged, networkcfg)
+
+    exp_fe = Conffile('conf.d/net.d/iface.brfe',
+                      netd('tagged', 'iface.brfe'),
+                      {'net.brfe'})
+    assert ifaces_activation.configs[0].diff(exp_fe) == ""
+    assert ifaces_activation.configs[0].svc == exp_fe.svc
+
+    exp_sto = Conffile('conf.d/net.d/iface.ethsto',
+                       netd('tagged', 'iface.ethsto'),
+                       set())
+    assert ifaces_activation.configs[3].diff(exp_sto) == ""
+    assert ifaces_activation.configs[3].svc == exp_sto.svc
 
 
-# XXX test_ipmi
+def test_demux_config_tagged(tagged, networkcfg, netd):
+    ifaces_activation = instantiate(tagged, networkcfg)
+    exp = Conffile('conf.d/net.d/iface.enxb8ac6f15dd0c',
+                   netd('tagged', 'iface.enxb8ac6f15dd0c'),
+                   {'net.enxb8ac6f15dd0c'})
+    assert ifaces_activation.configs[-2].diff(exp) == ""
+    assert ifaces_activation.configs[-2].svc == exp.svc
+
+
+def test_mactab_udev_tagged(tagged, networkcfg, fixstr):
+    mactab_activation = instantiate(tagged, networkcfg).inner
+    exp = Conffile('mactab', fixstr('tagged', 'mactab'), set())
+    assert mactab_activation.configs[0].diff(exp) == ""
+
+    udev_activation = mactab_activation.inner
+    exp = Conffile('udev/rules.d/70-network.rules',
+                   fixstr('tagged', 'udev/rules.d/70-quimby.rules'),
+                   set())
+    assert udev_activation.configs[0].diff(exp) == ""

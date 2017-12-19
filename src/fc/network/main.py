@@ -1,7 +1,8 @@
 """Flying Circus network configuration utility."""
 
-from .activation import IfacesActivation, matryoshka
-from .aux import Udev, Mactab, Demux, UdevActivation, MactabActivation
+from .activation import IfacesActivation, UdevActivation, MactabActivation
+from .activation import matryoshka
+from .aux import Udev, Mactab, Demux
 from .policy import NetworkPolicy
 import click
 import configparser
@@ -14,7 +15,7 @@ def instantiate(enc_ifaces, networkcfg):
     udev = Udev()
     demux = Demux()
     policies = []
-    for name, enc in enc_ifaces.items():
+    for name, enc in sorted(enc_ifaces.items()):
         policy = NetworkPolicy.build(name, enc, networkcfg)
 # XXX incorporate into __init__?
         policy.register([mactab, udev, demux])

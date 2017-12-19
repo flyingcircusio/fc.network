@@ -4,6 +4,7 @@ import click
 import functools
 import orderedset
 import os.path as p
+import subprocess
 
 set = orderedset.OrderedSet
 
@@ -65,3 +66,32 @@ class IfacesActivation(ActivationSet):
                            (p.join(prefix, c.relpath) for c in self.configs),
                            do_edit)
         return changed | bool(need_restart) | svcmgr.changed
+
+
+class SingleConfigActivation(ActivationSet):
+
+    def activate(self, prefix, do_edit, do_restart):
+        assert len(self.configs) == 1, "There should be exactly one mactab"
+        c = self.configs[0]
+        changed_me = c.write(prefix, do_edit)
+        changed_inner = super().activate(prefix, do_edit, do_restart)
+        if changed_me:
+            self.restart(prefix, do_restart)
+        return changed_me | changed_inner
+
+    def restart(self, prefix, do):
+        raise NotImplementedError()
+
+
+class MactabActivation(SingleConfigActivation):
+
+    def restart(self, prefix, do):
+        if do:
+            c = self.configs[0]
+            subprocess.check_call(['nameif', '-c', p.join(prefix, c.relpath)])
+
+
+class UdevActivation(SingleConfigActivation):
+
+    def restart(self, prefix, do):
+        OpenRC(prefix=prefix, do=do).restart(['udev-trigger'])

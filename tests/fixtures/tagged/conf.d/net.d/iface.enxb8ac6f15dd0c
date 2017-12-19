@@ -1,8 +1,9 @@
-# Managed by configure-network. Don't edit.
-# === Port b8:ac:6f:15:dd:0c ===
+# Managed by fc-network. Don't edit manually.
+
 config_enxb8ac6f15dd0c="null"
-mtu_enxb8ac6f15dd0c=1600
 vlans_enxb8ac6f15dd0c="1 2 3"
+mtu_enxb8ac6f15dd0c=1600
+
 vlan1_name="ethmgm"
 vlan2_name="ethfe"
 vlan3_name="ethsrv"

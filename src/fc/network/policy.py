@@ -35,6 +35,24 @@ class NetworkPolicy():
         )
         self.callbacks = []
 
+    def common_values(self):
+        """Returns dict of common template expansions."""
+        vlan = self.vlan
+        return dict(
+            addr4=vlan.addrs(4),
+            addr6=vlan.addrs(6),
+            addresses=vlan.addrs(),
+            gateways=vlan.gateways_filtered(),
+            iface=vlan.iname(),
+            mac=vlan.mac,
+            metric=vlan.metric,
+            mtu=vlan.mtu,
+            nets4=vlan.nets(4),
+            nets6=vlan.nets(6),
+            nets=vlan.nets(),
+            vlan=vlan.name,
+        )
+
     def register(self, callbacks):
         self.callbacks.extend(callbacks)
 
@@ -45,8 +63,8 @@ class NetworkPolicy():
         """
         return []
 
+# XXX helper really necessary?
     def _conffile(self, relpath, templates, values, services):
-        # XXX refactor: move cb into child classes
         out = ''.join(self.tmpl.get_template(t).render(**values)
                       for t in templates)
         return Conffile(relpath, out, set(services))
@@ -55,30 +73,21 @@ class NetworkPolicy():
 class UntaggedPolicy(NetworkPolicy):
 
     def generate(self):
-        # XXX refactor: move parameter expansion into helper
         vlan = self.vlan
-        name = self.vlan.name
-        v = dict(
-            iface='eth' + name, vlan=name,
-            addresses=vlan.addrs(), addr4=vlan.addrs(4), addr6=vlan.addrs(6),
-            nets=vlan.nets(), nets4=vlan.nets(4), nets6=vlan.nets(6),
-            gateways=vlan.gateways_filtered(), mac=vlan.mac,
-            metric=vlan.metric, mtu=vlan.mtu,
-        )
+        v = self.common_values()
         for cb in self.callbacks:
-            cb.register_iface(mac=vlan.mac, name=v['iface'])
+            cb.register_mac(mac=vlan.mac, name=v['iface'])
         if vlan.bridged:
-            v['baseiface'] = v['iface']
-            v['iface'] = 'br' + name
+            v['baseiface'] = vlan.basename
             yield self._conffile(
-                'conf.d/net.d/iface.br' + name,
+                'conf.d/net.d/iface.' + vlan.iname(),
                 ['iface_untagged_common', 'iface_untagged_bridged'], v,
-                ['net.br' + name, 'net.eth' + name])
+                ['net.' + vlan.iname(), 'net.' + vlan.basename])
         else:
             yield self._conffile(
-                'conf.d/net.d/iface.eth' + name,
+                'conf.d/net.d/iface.' + vlan.iname(),
                 ['iface_untagged_common', 'iface_untagged_unbridged'], v,
-                ['net.eth' + name])
+                ['net.' + vlan.iname()])
 
 
 class TaggedPolicy(NetworkPolicy):
@@ -86,30 +95,23 @@ class TaggedPolicy(NetworkPolicy):
     def generate(self):
         vlan = self.vlan
         name = self.vlan.name
-        v = dict(
-            iface='eth' + name, vlan=name,
-            addresses=vlan.addrs(), addr4=vlan.addrs(4), addr6=vlan.addrs(6),
-            nets=vlan.nets(), nets4=vlan.nets(4), nets6=vlan.nets(6),
-            gateways=vlan.gateways_filtered(), mac=vlan.mac,
-            metric=vlan.metric, mtu=vlan.mtu,
-        )
+        v = self.common_values()
+        mux_iface = v['mux_iface'] = (
+            'enx{}'.format(self.vlan.mac).replace(':', ''))
         for cb in self.callbacks:
-            cb.register_iface(mac=vlan.mac, name=v['iface'])
-            cb.register_mux(mac=vlan.mac, iface=v['iface'],
-                            vlan_id=self.vlan.vlan_id, mtu=vlan.mtu)
-# XXX need to activate individual demuxed interfaces?
+            cb.register_mac(mac=vlan.mac, name=mux_iface)
+            cb.register_mux(mux_iface=mux_iface, vlan=vlan)
         if vlan.bridged:
-            v['baseiface'] = v['iface']
-            v['iface'] = 'br' + name
+            v['baseiface'] = vlan.basename
             yield self._conffile(
-                'conf.d/net.d/iface.br' + name,
+                'conf.d/net.d/iface.' + vlan.iname(),
                 ['iface_untagged_common', 'iface_untagged_bridged'], v,
-                ['net.br' + name, 'net.eth' + name])
+                {'net.br' + name})
         else:
             yield self._conffile(
-                'conf.d/net.d/iface.eth' + name,
+                'conf.d/net.d/iface.' + vlan.iname(),
                 ['iface_untagged_common', 'iface_untagged_unbridged'], v,
-                ['net.eth' + name])
+                set())
 
 
 class TransitPolicy(NetworkPolicy):

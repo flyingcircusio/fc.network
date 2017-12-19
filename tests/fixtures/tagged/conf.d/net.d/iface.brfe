@@ -1,16 +1,31 @@
-# Managed by configure-network. Don't edit.
-# === VLAN "fe" ===
-config_ethfe="null"
-bridge_brfe="ethfe"
+# Managed by fc-network. Don't edit manually.
+# === VLAN fe (b8:ac:6f:15:dd:0c) ===
 config_brfe="
     172.20.2.38/25
     2a02:238:f030:1c2::106d/64
     2a02:238:f030:1c2::53/64
 "
 routes_brfe="
+    10.2.3.0/24 table fe rto_min 20ms
+    172.20.2.0/25 table fe rto_min 20ms
+    2a02:238:f030:1c2::/64 table fe rto_min 20ms
+    default via 172.20.2.1 table fe
     default via 172.20.2.1
+    default via 2a02:238:f030:1c2::1 table fe
     default via 2a02:238:f030:1c2::1
 "
+rules_brfe="
+    from 172.20.2.38/25 table fe priority 500
+    to 10.2.3.0/24 table fe priority 500
+    to 172.20.2.0/25 table fe priority 500
+"
+rules6_brfe="
+    from 2a02:238:f030:1c2::106d/64 table fe priority 500
+    from 2a02:238:f030:1c2::53/64 table fe priority 500
+    to 2a02:238:f030:1c2::/64 table fe priority 500
+"
 metric_brfe=500
-mtu_ethfe=1600
 dad_timeout_brfe=10
+config_ethfe="null"
+bridge_brfe="ethfe"
+mtu_ethfe=1600

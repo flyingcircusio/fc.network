@@ -1,3 +1,3 @@
-# Managed by configure-network. Don't edit.
-SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:08", ATTR{type}=="1", KERNEL=="eth*", NAME="eth0"
-SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:0e", ATTR{type}=="1", KERNEL=="eth*", NAME="eth1"
+# Managed by fc-network. Don't edit manually.
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:0c", ATTR{type}=="1", KERNEL=="eth*", NAME="enxb8ac6f15dd0c"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:ac:6f:15:dd:0e", ATTR{type}=="1", KERNEL=="eth*", NAME="enxb8ac6f15dd0e"

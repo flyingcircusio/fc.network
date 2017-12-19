@@ -1,8 +1,21 @@
-# Managed by configure-network. Don't edit.
-# === VLAN "sto" ===
+# Managed by fc-network. Don't edit manually.
+# === VLAN sto (b8:ac:6f:15:dd:0e) ===
 config_ethsto="
     172.20.4.53/24
     2a02:238:f030:1c4::1075/64
 "
-mtu_ethsto=9000
+routes_ethsto="
+    172.20.4.0/24 table sto rto_min 20ms
+    2a02:238:f030:1c4::/64 table sto rto_min 20ms
+"
+rules_ethsto="
+    from 172.20.4.53/24 table sto priority 1000
+    to 172.20.4.0/24 table sto priority 1000
+"
+rules6_ethsto="
+    from 2a02:238:f030:1c4::1075/64 table sto priority 1000
+    to 2a02:238:f030:1c4::/64 table sto priority 1000
+"
+metric_ethsto=1000
 dad_timeout_ethsto=10
+mtu_ethsto=9000

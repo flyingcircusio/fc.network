@@ -39,6 +39,17 @@ class VLAN():
                 gateways.append(self.gateways[net])
         return sorted(gateways)
 
+    def iname(self):
+        """Name of the upper-level network interface (br or eth)."""
+        if self.bridged:
+            return 'br' + self.name
+        return 'eth' + self.name
+
+    @property
+    def basename(self):
+        """Name of the physical interface."""
+        return 'eth' + self.name
+
     @property
     def bridged(self):
         return self.staticcfg.getboolean('bridged')

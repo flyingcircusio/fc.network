@@ -26,6 +26,7 @@ def tagged():
     with resource_stream(__name__, 'fixtures/tagged/enc/quimby.json') as f:
         return json.loads(f.read().decode('ascii'))['parameters']['interfaces']
 
+
 @pytest.fixture
 def networkcfg():
     cp = configparser.ConfigParser()
@@ -34,8 +35,17 @@ def networkcfg():
 
 
 @pytest.fixture
+def fixstr():
+    """Loads generic fixture as string."""
+    def load(testset, filename):
+        return resource_string(__name__, 'fixtures/{}/{}'.format(
+            testset, filename)).decode('ascii')
+    return load
+
+
+@pytest.fixture
 def netd():
-    """Expected result config file."""
+    """Expected result from conf.d/net.d as string."""
     def load(testset, filename):
         return resource_string(__name__, 'fixtures/{}/conf.d/net.d/{}'.format(
             testset, filename)).decode('ascii')

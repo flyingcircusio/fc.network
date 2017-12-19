@@ -1,7 +1,7 @@
 # Managed by fc-network. Don't edit manually.
 
 config_{{ mux_iface }}="null"
-vlans_{{ mux_iface }}="{{ vlans | join(' ') }}"
+vlans_{{ mux_iface }}="{{ vlan_ids | join(' ') }}"
 mtu_{{ mux_iface }}={{ mtu }}
 
 {% for id, name in names -%}
