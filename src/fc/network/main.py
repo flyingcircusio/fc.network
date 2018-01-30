@@ -17,7 +17,6 @@ def instantiate(enc_ifaces, networkcfg):
     policies = []
     for name, enc in sorted(enc_ifaces.items()):
         policy = NetworkPolicy.build(name, enc, networkcfg)
-# XXX incorporate into __init__?
         policy.register([mactab, udev, demux])
         policies.append(policy)
 
@@ -49,6 +48,5 @@ def main(edit, restart, enc, networkcfg, prefix):
     cp.read_file(networkcfg)
     activation = instantiate(json.load(enc)['parameters']['interfaces'], cp)
     changed = activation.activate(prefix, edit, restart)
-    # XXX clean up: iface, udev
     if changed:
         sys.exit(3)

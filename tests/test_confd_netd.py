@@ -1,6 +1,7 @@
 from fc.network.main import instantiate
 from fc.network.policy import NetworkPolicy
 from fc.network.conffile import Conffile
+import pytest
 
 
 def test_config_mgm_untagged(untagged, networkcfg, netd):
@@ -37,6 +38,11 @@ def test_config_sto_untagged(untagged, networkcfg, netd):
                    netd('untagged', 'iface.ethsto'),
                    set(['net.ethsto']))
     assert next(pol.generate()).diff(exp) == ""
+
+
+def test_config_puppet(puppet, networkcfg):
+    with pytest.raises(RuntimeError):
+        NetworkPolicy.build('srv', puppet['srv'], networkcfg)
 
 
 def test_iface_config_tagged(tagged, networkcfg, netd):

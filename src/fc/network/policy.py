@@ -14,17 +14,20 @@ class NetworkPolicy():
         static = (networkcfg[name] if name in networkcfg
                   else networkcfg[networkcfg.default_section])
         vlan = VLAN(name, enc, static)
-        if vlan.network_policy == 'untagged':
+        if vlan.policy == 'untagged':
             return UntaggedPolicy(vlan)
-        elif vlan.network_policy == 'tagged':
+        elif vlan.policy == 'tagged':
             return TaggedPolicy(vlan)
-        elif vlan.network_policy == 'transit':
+        elif vlan.policy == 'transit':
             return TransitPolicy(vlan)
-        elif vlan.network_policy == 'ipmi':
+        elif vlan.policy == 'ipmi':
             return IPMIPolicy(vlan)
-        elif vlan.network_policy == 'puppet':
-            return cls()
-        raise ValueError('unknown network policy', vlan.network_policy)
+        elif vlan.policy == 'puppet':
+            raise RuntimeError(
+                'should never been called with "puppet" policy', vlan)
+        raise ValueError(
+            'unknown network policy for VLAN {}'.format(vlan.name),
+            vlan.policy)
 
     def __init__(self, vlan):
         self.vlan = vlan
@@ -76,7 +79,7 @@ class UntaggedPolicy(NetworkPolicy):
         vlan = self.vlan
         v = self.common_values()
         for cb in self.callbacks:
-            cb.register_mac(mac=vlan.mac, name=v['iface'])
+            cb.register_mac(mac=vlan.mac, name=vlan.basename)
         if vlan.bridged:
             v['baseiface'] = vlan.basename
             yield self._conffile(

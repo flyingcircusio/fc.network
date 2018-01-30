@@ -79,7 +79,7 @@ class Mactab(MaclikeConfig):
 
 class Udev(MaclikeConfig):
 
-    RELPATH = 'mactab'
+    RELPATH = 'udev/rules.d/71-persistent-net.rules'
     TEMPLATE = ('SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", '
                 'ATTR{{address}}=="{mac}", ATTR{{type}}=="1", KERNEL=="eth*", '
                 'NAME="{name}"\n')

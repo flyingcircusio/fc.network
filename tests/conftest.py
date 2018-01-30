@@ -28,6 +28,13 @@ def tagged():
 
 
 @pytest.fixture
+def puppet():
+    """ENC interfaces for quimby puppet (legacy)."""
+    with resource_stream(__name__, 'fixtures/puppet/enc/quimby.json') as f:
+        return json.loads(f.read().decode('ascii'))['parameters']['interfaces']
+
+
+@pytest.fixture
 def networkcfg():
     cp = configparser.ConfigParser()
     cp.read(resource_filename(__name__, 'fixtures/fc-network.cfg'))

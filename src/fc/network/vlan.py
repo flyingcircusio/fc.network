@@ -5,7 +5,7 @@ class VLAN():
 
     def __init__(self, name, enc, staticcfg):
         self.name = name
-        self.network_policy = enc.get('network_policy') or 'puppet'
+        self.policy = enc.get('policy') or 'puppet'
         self.mac = enc['mac'].lower() or '00:00:00:00:00:00'
         self.networks = enc.get('networks', {})
         self.gateways = enc.get('gateways', {})
@@ -20,6 +20,9 @@ class VLAN():
             self._networks.append(net)
 
     def __str__(self):
+        return 'VLAN({})'.format(self.name)
+
+    def __repr__(self):
         return 'VLAN({})'.format(self.__dict__)
 
     def addrs(self, ipvers=None):
@@ -32,6 +35,7 @@ class VLAN():
             return [n for n in self._networks if n.version == ipvers]
         return self._networks
 
+# XXX add option to disable gateway for a given VLAN?
     def gateways_filtered(self):
         gateways = []
         for net, addr in self.networks.items():

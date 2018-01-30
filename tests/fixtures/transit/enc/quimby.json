@@ -18,19 +18,19 @@
       "rack" : "MDF W.0.1",
       "interfaces" : {
          "srv" : {
-            "network_policy" : "transit",
+            "policy" : "transit",
             "mac" : "b8:ac:6f:15:dd:0a",
             "gateways" : { },
             "networks" : { }
          },
          "mgm" : {
-            "network_policy" : "transit",
+            "policy" : "transit",
             "mac" : "b8:ac:6f:15:dd:08",
             "networks" : { },
             "gateways" : { }
          },
          "ipmi" : {
-            "network_policy" : "ipmi",
+            "policy" : "ipmi",
             "mac" : "b8:ac:6f:15:dd:10"
          }
       },

@@ -24,6 +24,10 @@ def matryoshka(activationsets):
 
 
 class ActivationSet():
+    """Bundles actions which can be performed in arbitrary order.
+
+    Ordering is expressed by inner/outer releationships.
+    """
 
     inner = None  # to be set in matryoshka()
 
@@ -95,3 +99,5 @@ class UdevActivation(SingleConfigActivation):
 
     def restart(self, prefix, do):
         OpenRC(prefix=prefix, do=do).restart(['udev-trigger'])
+
+    # TODO clean up /etc/udev/rules.d/70-persistent-net-*.rules

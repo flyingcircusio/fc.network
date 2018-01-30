@@ -27,7 +27,7 @@
       "environment_class" : "Puppet",
       "interfaces" : {
          "mgm" : {
-            "network_policy" : "untagged",
+            "policy" : "untagged",
             "mac" : "b8:ac:6f:15:dd:08",
             "networks" : {
                "172.20.1.0/24" : [
@@ -43,7 +43,7 @@
             }
          },
          "ipmi" : {
-            "network_policy" : "ipmi",
+            "policy" : "ipmi",
             "mac" : "b8:ac:6f:15:dd:10",
             "gateways" : {
                "2a02:238:f030:1c1::/64" : "2a02:238:f030:1c1::1",
@@ -59,7 +59,7 @@
             }
          },
          "fe" : {
-            "network_policy" : "untagged",
+            "policy" : "untagged",
             "mac" : "b8:ac:6f:15:dd:0c",
             "gateways" : {
                "10.2.3.0/24" : "10.2.3.1",
@@ -78,7 +78,7 @@
             }
          },
          "srv" : {
-            "network_policy" : "untagged",
+            "policy" : "untagged",
             "mac" : "b8:ac:6f:15:dd:0a",
             "gateways" : {
                "172.30.3.0/24" : "172.30.3.1",
@@ -96,7 +96,7 @@
             }
          },
          "sto" : {
-            "network_policy" : "untagged",
+            "policy" : "untagged",
             "mac" : "b8:ac:6f:15:dd:0e",
             "networks" : {
                "2a02:238:f030:1c4::/64" : [
